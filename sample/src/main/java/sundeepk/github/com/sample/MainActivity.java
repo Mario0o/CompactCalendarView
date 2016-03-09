@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
@@ -26,11 +28,12 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
     private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMM - yyyy", Locale.getDefault());
     private Map<Date, List<Booking>> bookings = new HashMap<>();
+    private TextView toolBar_title;
 
     public class Booking {
         private String title;
@@ -56,8 +59,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ActionBar actionBar = getSupportActionBar();
         final List<String> mutableBookings = new ArrayList<>();
+
+        toolBar_title = (TextView)findViewById(R.id.toolBar_title);
 
         final ListView bookingsListView = (ListView) findViewById(R.id.bookings_listview);
         final Button showPreviousMonthBut = (Button) findViewById(R.id.prev_button);
@@ -82,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
         // compactCalendarView.setShouldShowMondayAsFirstDay(false);
 
         //set initial title
-        actionBar.setTitle(dateFormatForMonth.format(compactCalendarView.getFirstDayOfCurrentMonth()));
+        toolBar_title.setText(dateFormatForMonth.format(compactCalendarView.getFirstDayOfCurrentMonth()));
 
         //set title on calendar scroll
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
@@ -104,7 +108,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
-                actionBar.setTitle(dateFormatForMonth.format(firstDayOfNewMonth));
+                toolBar_title.setText(dateFormatForMonth.format(firstDayOfNewMonth));
             }
         });
 
