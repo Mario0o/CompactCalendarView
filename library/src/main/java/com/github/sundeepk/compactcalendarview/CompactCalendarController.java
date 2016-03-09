@@ -270,13 +270,12 @@ class CompactCalendarController {
             velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
             int xVelocity = (int) velocityTracker.getXVelocity();
             if (currentDirection == Direction.HORIZONTAL || Math.abs(xVelocity) > 2000) {
-                if(xVelocity < 0){
+                if(xVelocity < 0)
                     monthsScrolledSoFar = (int)Math.floor(accumulatedScrollOffset.x / width);
-                }else if(xVelocity > 0){
+                else if(xVelocity > 0)
                     monthsScrolledSoFar = (int)Math.ceil(accumulatedScrollOffset.x / width);
-                } else {
+                else
                     monthsScrolledSoFar = Math.round(accumulatedScrollOffset.x / width);
-                }
                 float remainingScrollAfterFingerLifted = (accumulatedScrollOffset.x - monthsScrolledSoFar * width);
                 scroller.startScroll((int) accumulatedScrollOffset.x, 0, (int) -remainingScrollAfterFingerLifted, 0);
                 currentDirection = Direction.NONE;
