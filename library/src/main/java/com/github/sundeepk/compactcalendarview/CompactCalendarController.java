@@ -9,8 +9,12 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
+import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 
 import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
@@ -40,6 +44,7 @@ class CompactCalendarController {
     private float distanceX;
     private PointF accumulatedScrollOffset = new PointF();
     private OverScroller scroller;
+    private VelocityTracker mVelocityTracker;
     private int monthsScrolledSoFar;
     private Date currentDate = new Date();
     private Locale locale = Locale.getDefault();
@@ -66,6 +71,7 @@ class CompactCalendarController {
     private boolean shouldShowMondayAsFirstDay = true;
     private boolean useThreeLetterAbbreviation = false;
     private float screenDensity = 1;
+    private float mMaximumFlingVelocity;
 
     private enum Direction {
         NONE, HORIZONTAL, VERTICAL
@@ -100,6 +106,9 @@ class CompactCalendarController {
     }
 
     private void init(Context context) {
+
+        mMaximumFlingVelocity = ViewConfiguration.get(context)
+        .getScaledMaximumFlingVelocity();
         setUseWeekDayAbbreviation(false);
         dayPaint.setTextAlign(Paint.Align.CENTER);
         dayPaint.setStyle(Paint.Style.STROKE);
@@ -201,11 +210,11 @@ class CompactCalendarController {
             }
         } else {
             if (!shouldShowMondayAsFirstDay) {
-                this.dayColumnNames = new String[]{dayNames[1].substring(0, 1), dayNames[2].substring(0, 1),
-                        dayNames[3].substring(0, 1), dayNames[4].substring(0, 1), dayNames[5].substring(0, 1), dayNames[6].substring(0, 1), dayNames[7].substring(0, 1)};
+                this.dayColumnNames = new String[]{dayNames[1], dayNames[2],
+                        dayNames[3], dayNames[4], dayNames[5], dayNames[6], dayNames[7]};
             } else {
-                this.dayColumnNames = new String[]{dayNames[2].substring(0, 1), dayNames[3].substring(0, 1),
-                        dayNames[4].substring(0, 1), dayNames[5].substring(0, 1), dayNames[6].substring(0, 1), dayNames[7].substring(0, 1), dayNames[1].substring(0, 1)};
+                this.dayColumnNames = new String[]{dayNames[2], dayNames[3],
+                        dayNames[4], dayNames[5], dayNames[6], dayNames[7], dayNames[1]};
             }
         }
     }
@@ -255,9 +264,19 @@ class CompactCalendarController {
     }
 
     boolean onTouch(MotionEvent event) {
+        acquireTracker(event);
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (currentDirection == Direction.HORIZONTAL) {
-                monthsScrolledSoFar = Math.round(accumulatedScrollOffset.x / width);
+            VelocityTracker velocityTracker = mVelocityTracker;
+            velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+            int xVelocity = (int) velocityTracker.getXVelocity();
+            if (currentDirection == Direction.HORIZONTAL || Math.abs(xVelocity) > 2000) {
+                if(xVelocity < 0){
+                    monthsScrolledSoFar = (int)Math.floor(accumulatedScrollOffset.x / width);
+                }else if(xVelocity > 0){
+                    monthsScrolledSoFar = (int)Math.ceil(accumulatedScrollOffset.x / width);
+                } else {
+                    monthsScrolledSoFar = Math.round(accumulatedScrollOffset.x / width);
+                }
                 float remainingScrollAfterFingerLifted = (accumulatedScrollOffset.x - monthsScrolledSoFar * width);
                 scroller.startScroll((int) accumulatedScrollOffset.x, 0, (int) -remainingScrollAfterFingerLifted, 0);
                 currentDirection = Direction.NONE;
@@ -270,6 +289,7 @@ class CompactCalendarController {
                 return true;
             }
             currentDirection = Direction.NONE;
+            releaseTracker();
         }
         return false;
     }
@@ -569,4 +589,16 @@ class CompactCalendarController {
         dayPaint.setColor(calenderTextColor);
     }
 
+    private void acquireTracker(MotionEvent event){
+        if(null == mVelocityTracker)
+            mVelocityTracker = VelocityTracker.obtain();
+        mVelocityTracker.addMovement(event);
+    }
+
+    private void releaseTracker(){
+        if(mVelocityTracker != null){
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+    }
 }
