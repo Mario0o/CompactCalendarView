@@ -1,8 +1,8 @@
 # CompactCalendarView
 The library is forked from [CompactCalendarView](https://github.com/SundeepK/CompactCalendarView) and I changed some code.
-I added fast sliding event and changed UI;
+I added fast sliding event and changed UI.
 
-You can use it as the author said
+You can use it as the author said.
 
 CompactCalendarView is a simple calendar view which provides scrolling between months. It's based on Java's Date and Calendar classes. It provides a simple api to query for dates and listeners for specific events.  For example, when the calendar has scrolled to a new month or a day has been selected.
 Still under active developmemt.
@@ -15,14 +15,6 @@ Still under active developmemt.
         compactCalendarView.setLocale(Locale.CHINESE);
         compactCalendarView.setUseThreeLetterAbbreviation(true);
 ```
-
-# Open/Close animations
-The library supports opening/closing with or without animations. This is currently in beta (in a branch and will be avaible in gradle soon as a beta).
-
-![ScreenShot](https://github.com/SundeepK/CompactCalendarView/blob/master/images/compact_calendar_animation.gif)
-
-# Example usage
-It is possible to change the apreance of the view via a few properties. This includes the background color, text color, textsize color of the current day and the color of the first day of the month.
 
 ```xml
     <com.github.sundeepk.compactcalendarview.CompactCalendarView
@@ -39,24 +31,6 @@ It is possible to change the apreance of the view via a few properties. This inc
         app:compactCalendarCurrentDayBackgroundColor="#B71C1C"
         />
 
-```
-```gradle
-dependencies {
-    compile 'com.github.sundeepk:compact-calendar-view:1.8.1'
-}
-
-//smooth scrolling functionality
-dependencies {
-    compile 'com.github.sundeepk:compact-calendar-view:1.8.2-beta-smooth-scrolling'
-}
-
-//smooth scrolling functionality with open/close calendar
-dependencies {
-    compile 'com.github.sundeepk:compact-calendar-view:1.8.2-beta-smooth-scrolling-with-animations'
-}
-
-
-```
 #Contributing  
 Please raise an issue of the requirement so that a disscussion can take before any code is written.
 
